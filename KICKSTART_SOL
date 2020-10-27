@@ -1,0 +1,42 @@
+const fs = require('fs');
+const input = fs.readFileSync(0,'utf8').split('\n');
+let line = 0;
+
+function inputLine() {
+    return input[line++];
+}
+const inputLength = inputLine();
+for (let i = 0; i < inputLength;i++) {
+    console.log(`Case #${i+1}: ${solve(inputLine())}`);
+}
+
+function solve(inputStr) {
+    const kickInInput = inputStr.match(/START/g);
+    let total = 0;
+    let count = 0;
+    let afterKickInx = inputStr;
+    if (!kickInInput || inputStr.length < 9) {
+        return total;
+    }
+    for (let i=0;i<kickInInput.length;i++) {
+        const startInx = afterKickInx.indexOf('START');
+        const kickInx = afterKickInx.indexOf('KICK');
+        if (startInx === -1 && kickInx === -1) {
+            break;
+        } else if ((startInx > -1 && kickInx === -1) || (startInx < kickInx)) {
+          total += count;
+          afterKickInx = afterKickInx.substring(startInx+5);
+          continue;
+        }
+        const matchKick = afterKickInx.substring(kickInx,startInx+5);
+        const startMatch = matchKick.match(/(?=(KIC[K]+))/g);
+        afterKickInx = afterKickInx.substring(startInx+5);
+        if (startMatch) {
+            count = count + startMatch.length;
+            total += count;
+        } else {
+            break;
+        }
+    }
+    return total;
+}
